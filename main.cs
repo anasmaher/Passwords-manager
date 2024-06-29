@@ -29,7 +29,7 @@ namespace train
             }
         }
 
-        public static int GetOperation()
+        private static int GetOperation()
         {
             Console.WriteLine("Operations");
             Console.WriteLine("1.List all passwords\n2.Add a password\n3.Edit a password\n4.Delete a password\n");
@@ -39,7 +39,7 @@ namespace train
             return op;
         }
 
-        public static void ListAllPasswords()
+        private static void ListAllPasswords()
         {
             int i = 1;
             foreach (var site in _dic){
@@ -141,7 +141,7 @@ namespace train
             Save();
         }
 
-        static void EditFromAdd(string site, string username, string password)
+        private static void EditFromAdd(string site, string username, string password)
         {
             _dic[site][username] = password;
             Console.WriteLine("Successfully edited!\n");
