@@ -9,21 +9,25 @@ namespace train
     {
         private static readonly Dictionary<string, Dictionary<string, string>> _dic = new Dictionary<string, Dictionary<string, string>>();
 
+        private delegate void Operation();
+
         static void Main(String[] args)
         {
             Read();
+
+            var operations = new Dictionary<int, Operation> {
+                { 1, ListAllPasswords },
+                { 2, AddPassword },
+                { 3, EditPassword },
+                { 4, DeletePassword }
+            };
+
             while (true)
             {
                 int op = GetOperation();
 
-                if (op == 1)
-                    ListAllPasswords();
-                else if (op == 2)
-                    AddPassword();
-                else if (op == 3)
-                    EditPassword();
-                else if (op == 4)
-                    DeletePassword();
+                if (operations.ContainsKey(op))
+                    operations[op]();
                 else
                     Console.WriteLine("Invalid operation!\n");
             }
@@ -42,7 +46,8 @@ namespace train
         private static void ListAllPasswords()
         {
             int i = 1;
-            foreach (var site in _dic){
+            foreach (var site in _dic)
+            {
                 Console.WriteLine($"{i++}.{site.Key}");
 
                 foreach (var account in site.Value)
@@ -60,19 +65,19 @@ namespace train
             Console.Write("Username: ");
             info[1] = Console.ReadLine();
 
-            if(sourceOperation == 2)
+            if (sourceOperation == 2)
             {
                 Console.Write("Password: ");
                 info[2] = Console.ReadLine();
             }
-            else if(sourceOperation == 3)
+            else if (sourceOperation == 3)
             {
                 Console.Write("New password: ");
                 info[2] = Console.ReadLine();
             }
 
             info[0] = info[0].ToLower();
-            
+
             return info;
         }
 
@@ -88,7 +93,7 @@ namespace train
                 Console.WriteLine("There is no such username.\n");
                 return false;
             }
-             
+
             return true;
         }
 
@@ -100,7 +105,7 @@ namespace train
             site = info[0];
             username = info[1];
             password = info[2];
-        
+
             if (_dic.ContainsKey(site) && _dic[site].ContainsKey(username))
             {
                 Console.Write("This user name is already used for this site, do you wish to edit it? [Yes/No]: ");
@@ -111,10 +116,10 @@ namespace train
             }
             else
             {
-                if(_dic.ContainsKey(site))
+                if (_dic.ContainsKey(site))
                     _dic[site].Add(username, password);
                 else
-                    _dic.Add(site, new Dictionary<string, string> { {username, password} });
+                    _dic.Add(site, new Dictionary<string, string> { { username, password } });
 
                 Console.WriteLine("Successfully added!\n");
             }
@@ -125,7 +130,7 @@ namespace train
         private static void EditPassword()
         {
             string site, username, password;
-            
+
             Console.WriteLine("Enter the data to be edited");
             string[] info = GetInfo(3);
             site = info[0];
@@ -171,9 +176,9 @@ namespace train
         private static void Read()
         {
             string data = File.ReadAllText("Data.txt");
-            foreach(var line in data.Split(Environment.NewLine))
+            foreach (var line in data.Split(Environment.NewLine))
             {
-                if(string.IsNullOrEmpty(line)) continue;
+                if (string.IsNullOrEmpty(line)) continue;
 
                 int siteSplitter = line.IndexOf(':');
                 int usernameSplitter = line.IndexOf("=");
@@ -185,7 +190,7 @@ namespace train
                 if (_dic.ContainsKey(site))
                     _dic[site].Add(username, password);
                 else
-                    _dic.Add(site, new Dictionary<string, string> { {username, password} });
+                    _dic.Add(site, new Dictionary<string, string> { { username, password } });
             }
         }
 
@@ -195,7 +200,7 @@ namespace train
             foreach (var entry in _dic)
                 foreach (var item in _dic[entry.Key])
                     sb.AppendLine($"{entry.Key}:{item.Key}={item.Value}");
-            
+
             File.WriteAllText("Data.txt", sb.ToString());
         }
     }
